@@ -20,16 +20,16 @@ class Product(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=250)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    image = ResizedImageField(default='product.jpeg', size=[300, 300],
+    image = ResizedImageField(default='placeholder.png', size=[300, 300],
                               crop=['middle', 'center'], quality=75,
                               force_format="PNG",
-                              upload_to='products', blank=True, null=True)
+                              upload_to='products')
 
     class Meta:
         ordering = ['-name']
 
     def __str__(self):
-        return f"{self.name} ({self.category}) (R{self.price})".title()
+        return f"{self.name} ({self.category}) R{self.price}".title()
 
 
 class Order(models.Model):
