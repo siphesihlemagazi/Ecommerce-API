@@ -1,5 +1,6 @@
 from api.models import Product, Order
 from django.contrib.auth.models import User
+from rest_framework.response import Response
 from rest_framework import generics, status, mixins
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from api.serializers import ProductSerializer, OrderSerializer, UserSerializer
@@ -48,6 +49,13 @@ class OrderDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        if not self.request.user.is_authenticated:
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         queryset = self.queryset.filter(id=self.request.user.id)
