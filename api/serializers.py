@@ -14,24 +14,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ["name", "price", "description", "category", "category_name", "stock", "image"]
+        fields = ["name", "price", "description", "category",
+                  "category_name", "stock", "image"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    product_name = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
+    customer = serializers.SerializerMethodField()
+    product_name = serializers.ReadOnlyField(source="product.name")
+    description = serializers.ReadOnlyField(source="product.description")
 
-    def get_product_name(self, obj):
-        return obj.product.name
-
-    def get_description(self, obj):
-        return obj.product.description
+    def get_customer(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
     class Meta:
         model = Order
         fields = "__all__"
-        read_only_fields = ['status', 'date_created', 'total_price',
-                            'product_name', 'description']
+        read_only_fields = ['customer', 'status', 'date_created', 'total_price',
+                            'product_name', 'description', 'user']
 
 
 class UserSerializer(serializers.ModelSerializer):

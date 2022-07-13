@@ -12,3 +12,28 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         return obj == request.user
 
+
+class IsStaffOrReadOnly(permissions.BasePermission):
+    """
+    Ensure only staff members can add products
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in permissions.SAFE_METHODS or
+            request.user and
+            request.user.is_staff
+        )
+
+
+class IsNotAuthenticatedOrReadOnly(permissions.BasePermission):
+    """
+    Disallow users from creating account
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in permissions.SAFE_METHODS or
+            request.user and
+            not request.user.is_authenticated
+        )

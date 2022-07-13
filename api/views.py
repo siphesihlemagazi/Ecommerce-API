@@ -4,17 +4,18 @@ from rest_framework.response import Response
 from rest_framework import generics, status, mixins
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from api.serializers import ProductSerializer, OrderSerializer, UserSerializer
-from api.permissions import IsOwnerOrReadOnly
+from api.permissions import IsOwnerOrReadOnly, IsStaffOrReadOnly, \
+    IsNotAuthenticatedOrReadOnly
 
 
 class ProductList(generics.ListCreateAPIView):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsStaffOrReadOnly]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsStaffOrReadOnly]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
@@ -47,15 +48,9 @@ class OrderDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
 
 
 class UserList(generics.ListCreateAPIView):
+    permission_classes = [IsNotAuthenticatedOrReadOnly]
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-    def perform_create(self, serializer):
-        if not self.request.user.is_authenticated:
-            if serializer.is_valid():
-                serializer.save()
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         queryset = self.queryset.filter(id=self.request.user.id)
