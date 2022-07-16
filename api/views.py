@@ -1,6 +1,5 @@
 from api.models import Product, Order
-from django.contrib.auth.models import User
-from rest_framework.response import Response
+from authentication.models import User
 from rest_framework import generics, status, mixins
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from api.serializers import ProductSerializer, OrderSerializer, UserSerializer
@@ -9,6 +8,7 @@ from api.permissions import IsOwnerOrReadOnly, IsStaffOrReadOnly, \
 
 
 class ProductList(generics.ListCreateAPIView):
+    authentication_classes = []
     permission_classes = [IsOwnerOrReadOnly, IsStaffOrReadOnly]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
