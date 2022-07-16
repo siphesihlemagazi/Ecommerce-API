@@ -10,32 +10,36 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    category_name = serializers.ReadOnlyField(source="category.name")
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ["name", "price", "description", "category",
+                  "category_name", "stock", "image"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    customer = serializers.SerializerMethodField()
+    product_name = serializers.ReadOnlyField(source="product.name")
+    description = serializers.ReadOnlyField(source="product.description")
 
-    product_name = serializers.SerializerMethodField()
-
-    def get_product_name(self, obj):
-        return obj.product.name
+    def get_customer(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
     class Meta:
         model = Order
         fields = "__all__"
-        read_only_fields = ['status', 'date_created', 'total_price', 'product_name']
+        read_only_fields = ['customer', 'status', 'date_created', 'total_price',
+                            'product_name', 'description', 'user']
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name',
+                  'password']
 
     def create(self, validated_data):
         user = super().create(validated_data)
