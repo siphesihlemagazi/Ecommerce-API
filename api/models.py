@@ -23,7 +23,7 @@ class Product(TrackingModel):
     description = models.CharField(max_length=250)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     stock = models.PositiveIntegerField(default=1)
-    image = ResizedImageField(default='placeholder.png', size=[300, 300],
+    image = ResizedImageField(default='products/placeholder.png', size=[300, 300],
                               crop=['middle', 'center'], quality=75,
                               force_format="PNG",
                               upload_to='products')
