@@ -42,7 +42,6 @@ class Order(TrackingModel):
     quantity = models.PositiveIntegerField(default=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=25, choices=statuses, default='Pending')
-    # date_created = models.DateTimeField(default=datetime.now)
     total_price = models.PositiveIntegerField(default=0)
 
     class Meta:
